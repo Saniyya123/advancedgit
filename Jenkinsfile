@@ -15,7 +15,7 @@ pipeline {
 
      stage('Deploy Development') {
       steps {
-            bat "mvn clean package deploy -DmuleVersion=4.4.0 -Dusername=Saniyya_Siddiqa -Dpassword=Saniyya@2000 -DapplicationName=cicd-ws -Denvironment=Sandbox -Dworkers=1 -DworkerType=Micro -DmuleDeploy"
+            bat "mvn clean package deploy -DmuleVersion=4.4.0 -Dusername=Saniyya_Siddiqa -Dpassword=Saniyya@2000 -DapplicationName=advanced-green -Denvironment=Sandbox -Dworkers=1 -DworkerType=Micro -DmuleDeploy"
             echo "deploy success"           
       }
     }
