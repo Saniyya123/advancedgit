@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration doc:name="Configuration" doc:id="09ff8dbb-2924-434f-bfea-fafa169ae5b8" defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler" doc:id="8e8fdf86-237e-4d11-8dc8-2e17ba545466" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0a4c230b-e57a-4baa-ae59-c9c92bcd123e" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="1017ec20-8584-4fd0-8afd-67bd45b81f03" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Error occured at global level"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+	</error-handler>
+</mule>

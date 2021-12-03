@@ -26,6 +26,32 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="ae433d3c-8f62-49f0-b0ad-9df68ed801e4" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="870041ee-6e65-47c7-8fde-c2394f3e99be" type="DB:CONNECTIVITY">
+				<ee:transform doc:name="Transform Message" doc:id="3811ca68-3c22-4eb8-8bee-3a910d7fe9d4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "flow level error"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="48f472a6-a286-4b84-89b0-c9bec88b4ecc" type="DB:BAD_SQL_SYNTAX">
+				<ee:transform doc:name="Transform Message" doc:id="7e3ad658-d54f-4cf5-9079-be3dbcefa7b0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Syntax error occured"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
 	</flow>
 	<flow name="Empid" doc:id="5502b19d-3802-4d64-914b-b4dcb7bfe789" >
 		<http:listener doc:name="Copy_of_Listener" doc:id="590d5f9a-b123-4455-ad04-9a531d6cdda7" config-ref="HTTP_Listener_config" path="/emp/{id}" />
@@ -46,10 +72,26 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="post" doc:id="1a3a27a9-4b14-40e7-a255-4a985e635cdf" >
 		<http:listener doc:name="Listener" doc:id="102c3b55-52a9-4fa9-9305-be9130dcf2df" config-ref="HTTP_Listener_config" path="/emp" allowedMethods="POST"/>
-		<db:insert doc:name="Insert" doc:id="2ee09db7-47b3-446f-ab26-1ee80fb94652" config-ref="Database_Config">
-			<db:sql ><![CDATA[insert into employee values(:id, :name, :salary)]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{"id": payload.id, "name": payload.name, "salary": payload.salary}]]]></db:input-parameters>
+		<try doc:name="Try" doc:id="266ff41c-afe9-407c-a109-b6afc9ec7e08" >
+			<db:insert doc:name="Insert" doc:id="2ee09db7-47b3-446f-ab26-1ee80fb94652" config-ref="Database_Config">
+			<db:sql><![CDATA[insert into employee values(:id, :name, :salary)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{"id": payload.id, "name": payload.name, "salary": payload.salary}]]]></db:input-parameters>
 		</db:insert>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0b773b54-0edd-4683-b0c4-1cbac52630e1" type="DB:CONNECTIVITY">
+					<ee:transform doc:name="Transform Message" doc:id="4e5f7a34-8486-4426-b099-d7808b16d022" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Flow level error occured"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
 		<ee:transform doc:name="Transform Message" doc:id="43df0b6a-89ca-40cc-8349-e91f5303f2ed" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
